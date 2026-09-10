@@ -1,0 +1,92 @@
+[
+  {
+    "id": "source-ecourts-001",
+    "title": "eCourts Services — Case Status & CNR Lookup",
+    "url": "https://services.ecourts.gov.in/",
+    "publisher": "e-Committee, Supreme Court of India",
+    "jurisdiction": "India (all district & High Courts)",
+    "topic": "case_status",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-nalsa-001",
+    "title": "NALSA — Free Legal Aid & Lok Adalat FAQ",
+    "url": "https://nalsa.gov.in/",
+    "publisher": "National Legal Services Authority",
+    "jurisdiction": "India",
+    "topic": "legal_aid",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-nalsa-002",
+    "title": "NALSA — Toll-free Legal Aid Helpline (15100)",
+    "url": "https://nalsa.gov.in/",
+    "publisher": "National Legal Services Authority",
+    "jurisdiction": "India",
+    "topic": "legal_aid",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-ncrp-001",
+    "title": "National Cyber Crime Reporting Portal (NCRP)",
+    "url": "https://cybercrime.gov.in/",
+    "publisher": "Indian Cyber Crime Coordination Centre (I4C), Ministry of Home Affairs",
+    "jurisdiction": "India",
+    "topic": "cyber_fraud",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-ncrp-002",
+    "title": "1930 — National Cyber Fraud Helpline",
+    "url": "https://cybercrime.gov.in/",
+    "publisher": "Indian Cyber Crime Coordination Centre (I4C), Ministry of Home Affairs",
+    "jurisdiction": "India",
+    "topic": "cyber_fraud",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-edaakhil-001",
+    "title": "e-Daakhil — Consumer Forum Online Filing Portal",
+    "url": "https://edaakhil.nic.in/",
+    "publisher": "National Consumer Disputes Redressal Commission",
+    "jurisdiction": "India",
+    "topic": "consumer_disputes",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-nch-001",
+    "title": "National Consumer Helpline (1915 / INGRAM)",
+    "url": "https://consumerhelpline.gov.in/",
+    "publisher": "Department of Consumer Affairs, Government of India",
+    "jurisdiction": "India",
+    "topic": "consumer_disputes",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-rental-general-001",
+    "title": "General procedural guidance — rental deposit & eviction notice response",
+    "url": "https://nalsa.gov.in/",
+    "publisher": "NyayaSetu project (verified procedural guide)",
+    "jurisdiction": "India (general; state Rent Control Acts vary)",
+    "topic": "rental_tenancy",
+    "language": "en",
+    "verification_status": "verified"
+  },
+  {
+    "id": "source-employment-general-001",
+    "title": "General procedural guidance — unexplained salary deductions & termination notices",
+    "url": "https://labour.gov.in/",
+    "publisher": "NyayaSetu project (verified procedural guide)",
+    "jurisdiction": "India (general; state Shops & Establishments Acts vary)",
+    "topic": "employment",
+    "language": "en",
+    "verification_status": "verified"
+  }
+]
