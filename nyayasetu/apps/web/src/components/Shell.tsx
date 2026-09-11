@@ -1,60 +1,73 @@
 import { Link, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Scale, FolderClock, FilePlus2, LogOut, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "../lib/auth";
+import { useLanguage } from "../lib/i18n";
 
 export default function Shell({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-sage bg-paper">
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-baseline gap-2">
-            <span className="font-serif text-xl font-semibold text-ink">NyayaSetu</span>
-            <span className="hidden sm:inline text-sm text-ink/60">
-              understand a risk before it becomes a case
+          <Link to="/" className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white">
+              <Scale className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <span className="flex flex-col leading-tight">
+              <span className="font-serif text-xl font-semibold text-ink">NyayaSetu</span>
+              <span className="hidden sm:inline text-xs text-ink/50">
+                {t("nav.tagline")}
+              </span>
             </span>
           </Link>
-          <nav className="flex items-center gap-2 sm:gap-4 text-sm">
+          <nav className="flex items-center gap-1 sm:gap-3 text-sm">
             {user ? (
               <>
                 <Link
                   to="/history"
-                  className="rounded-md px-3 py-2 text-ink/80 hover:bg-sage/60 min-h-[44px] flex items-center"
+                  className="flex items-center gap-1.5 rounded-md px-3 py-2 text-ink/80 hover:bg-sage/60 min-h-[44px]"
                 >
-                  My cases
+                  <FolderClock className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{t("nav.myCases")}</span>
                 </Link>
                 <Link
                   to="/new"
-                  className="rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px] flex items-center"
+                  className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px]"
                 >
-                  New case
+                  <FilePlus2 className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{t("nav.newCase")}</span>
                 </Link>
                 <button
                   onClick={() => {
                     logout();
                     navigate("/");
                   }}
-                  className="rounded-md px-3 py-2 text-ink/60 hover:bg-sage/60 min-h-[44px]"
+                  className="flex items-center gap-1.5 rounded-md px-3 py-2 text-ink/60 hover:bg-sage/60 min-h-[44px]"
                   title={user.email}
                 >
-                  Log out
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{t("nav.logout")}</span>
                 </button>
               </>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="rounded-md px-3 py-2 text-ink/80 hover:bg-sage/60 min-h-[44px] flex items-center"
+                  className="flex items-center gap-1.5 rounded-md px-3 py-2 text-ink/80 hover:bg-sage/60 min-h-[44px]"
                 >
-                  Log in
+                  <LogIn className="h-4 w-4" aria-hidden="true" />
+                  {t("nav.login")}
                 </Link>
                 <Link
                   to="/signup"
-                  className="rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px] flex items-center"
+                  className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px]"
                 >
-                  Sign up
+                  <UserPlus className="h-4 w-4" aria-hidden="true" />
+                  {t("nav.signup")}
                 </Link>
               </>
             )}
@@ -66,11 +79,7 @@ export default function Shell({ children }: { children: ReactNode }) {
 
       <footer className="border-t border-sage">
         <div className="mx-auto max-w-5xl px-6 py-6 text-sm text-ink/60">
-          <p>
-            NyayaSetu gives legal information and procedural guidance, not legal
-            advice. It does not decide guilt, predict a court outcome, or submit
-            anything on your behalf.
-          </p>
+          <p>{t("footer.disclaimer")}</p>
         </div>
       </footer>
     </div>

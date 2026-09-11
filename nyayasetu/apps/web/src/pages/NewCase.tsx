@@ -1,9 +1,12 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Type, Upload, Mic, Square } from "lucide-react";
 import Shell from "../components/Shell";
 import { api, ApiError } from "../lib/api";
 import type { Domain } from "../types";
 import { DOMAIN_LABELS } from "../types";
+import { useLanguage } from "../lib/i18n";
+import type { TranslationKey } from "../lib/i18n";
 
 const DOMAINS: Domain[] = [
   "rental_tenancy",
@@ -13,10 +16,18 @@ const DOMAINS: Domain[] = [
   "general_notice",
 ];
 
+const DOMAIN_TRANSLATION_KEY: Partial<Record<Domain, TranslationKey>> = {
+  rental_tenancy: "domain.rental",
+  employment: "domain.employment",
+  consumer_disputes: "domain.consumer",
+  cyber_fraud: "domain.cyber",
+};
+
 type Mode = "text" | "document" | "voice";
 
 export default function NewCase() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [domain, setDomain] = useState<Domain>("rental_tenancy");
   const [mode, setMode] = useState<Mode>("text");
   const [text, setText] = useState("");
@@ -103,15 +114,12 @@ export default function NewCase() {
   return (
     <Shell>
       <section className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Start a new case</h1>
-        <p className="mt-2 text-ink/70">
-          Choose what this is about, then upload a document, describe what
-          happened, or record a short voice note.
-        </p>
+        <h1 className="font-serif text-3xl font-semibold text-ink">{t("newcase.title")}</h1>
+        <p className="mt-2 text-ink/70">{t("newcase.subtitle")}</p>
 
         <div className="mt-8">
           <label className="block text-sm font-medium text-ink mb-2" htmlFor="domain">
-            What is this about?
+            {t("newcase.domainLabel")}
           </label>
           <select
             id="domain"
@@ -121,7 +129,7 @@ export default function NewCase() {
           >
             {DOMAINS.map((d) => (
               <option key={d} value={d}>
-                {DOMAIN_LABELS[d]}
+                {DOMAIN_TRANSLATION_KEY[d] ? t(DOMAIN_TRANSLATION_KEY[d]!) : DOMAIN_LABELS[d]}
               </option>
             ))}
           </select>
@@ -129,19 +137,23 @@ export default function NewCase() {
 
         <div className="mt-8">
           <div className="flex flex-wrap rounded-md border border-sage overflow-hidden w-fit" role="tablist">
-            {(["text", "document", "voice"] as Mode[]).map((m) => (
-              <button
-                key={m}
-                role="tab"
-                aria-selected={mode === m}
-                onClick={() => setMode(m)}
-                className={`min-h-[44px] px-5 text-sm font-medium ${
-                  mode === m ? "bg-brand text-white" : "bg-white text-ink/70 hover:bg-sage/40"
-                }`}
-              >
-                {m === "text" ? "Describe it" : m === "document" ? "Upload a document" : "Record voice note"}
-              </button>
-            ))}
+            {(["text", "document", "voice"] as Mode[]).map((m) => {
+              const Icon = m === "text" ? Type : m === "document" ? Upload : Mic;
+              return (
+                <button
+                  key={m}
+                  role="tab"
+                  aria-selected={mode === m}
+                  onClick={() => setMode(m)}
+                  className={`flex items-center gap-2 min-h-[44px] px-5 text-sm font-medium transition-colors ${
+                    mode === m ? "bg-brand text-white" : "bg-white text-ink/70 hover:bg-sage/40"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  {m === "text" ? t("newcase.describe") : m === "document" ? t("newcase.upload") : t("newcase.voice")}
+                </button>
+              );
+            })}
           </div>
 
           {mode === "document" ? (
@@ -167,17 +179,19 @@ export default function NewCase() {
                       type="button"
                       onClick={startRecording}
                       disabled={transcribing}
-                      className="min-h-[44px] rounded-md bg-severity-emergency px-5 text-white font-medium hover:opacity-90 disabled:opacity-50"
+                      className="flex items-center gap-2 min-h-[44px] rounded-md bg-severity-emergency px-5 text-white font-medium hover:opacity-90 disabled:opacity-50"
                     >
-                      ● Start recording
+                      <Mic className="h-4 w-4" aria-hidden="true" />
+                      Start recording
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={stopRecording}
-                      className="min-h-[44px] rounded-md border border-severity-emergency px-5 text-severity-emergency font-medium animate-pulse"
+                      className="flex items-center gap-2 min-h-[44px] rounded-md border border-severity-emergency px-5 text-severity-emergency font-medium animate-pulse"
                     >
-                      ■ Stop & transcribe
+                      <Square className="h-4 w-4" aria-hidden="true" />
+                      Stop & transcribe
                     </button>
                   )}
                   {transcribing && <span className="text-sm text-ink/60">Transcribing…</span>}
@@ -227,7 +241,7 @@ export default function NewCase() {
           disabled={!canSubmit}
           className="mt-8 min-h-[48px] w-full sm:w-auto rounded-md bg-brand px-8 text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-dark"
         >
-          {submitting ? "Submitting…" : "Analyse this case"}
+          {submitting ? "Submitting…" : t("newcase.submit")}
         </button>
       </section>
     </Shell>
