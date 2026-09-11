@@ -32,10 +32,21 @@ async def add_request_id(request: Request, call_next):
         response = await call_next(request)
     except Exception:
         logger.exception("Unhandled error [request_id=%s]", request_id)
-        return JSONResponse(
+        response = JSONResponse(
             status_code=500,
             content={"detail": "Something went wrong on our end.", "request_id": request_id},
         )
+        # This fallback response is built by hand and bypasses
+        # CORSMiddleware's normal response-side processing (it's added
+        # *inside* this middleware, so an exception here skips it entirely).
+        # Without these headers, the browser reports a confusing "CORS
+        # blocked" error that hides the real 500 underneath it.
+        origin = request.headers.get("origin")
+        if origin:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["X-Request-Id"] = request_id
+        return response
     response.headers["X-Request-Id"] = request_id
     return response
 
