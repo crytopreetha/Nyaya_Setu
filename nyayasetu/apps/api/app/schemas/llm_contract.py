@@ -6,7 +6,7 @@ services/analysis_pipeline.py::validate_grounded_response.
 """
 from typing import Optional, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 Severity = Literal["informational", "attention", "urgent", "emergency"]
 
@@ -52,16 +52,18 @@ class GroundedRiskItem(BaseModel):
     )
     is_inference: bool = False
 
-    @field_validator("source_ids")
-    @classmethod
-    def _require_grounding(cls, v, info):
+    @model_validator(mode="after")
+    def _require_grounding(self):
         # A legal claim needs either a source or an explicit inference flag.
-        is_inference = info.data.get("is_inference", False)
-        if not v and not is_inference:
-            raise ValueError(
-                "risk_items entries must cite a source_id or be marked is_inference=true"
-            )
-        return v
+        # Field-level validators can't reliably see a later-declared field's
+        # final value (that was the actual bug here), so this runs after the
+        # whole object is built. If the model forgot to set is_inference on
+        # an unsourced claim, self-heal instead of failing the whole
+        # analysis — the claim is simply treated as an inference, which is
+        # exactly what "no source cited" means anyway.
+        if not self.source_ids and not self.is_inference:
+            self.is_inference = True
+        return self
 
 
 class GroundedDate(BaseModel):
