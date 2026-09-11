@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     whisper_model_size: str = "tiny"  # tiny | base | small — bigger = more accurate, slower
 
     storage_dir: str = "/app/storage_data"
-    knowledge_base_dir: str = "/knowledge-base"
+    knowledge_base_dir: str = "/app/knowledge-base"
 
     max_upload_bytes: int = 25 * 1024 * 1024  # 25 MB
 

@@ -32,7 +32,6 @@ services:
         condition: service_healthy
     volumes:
       - ./apps/api:/app
-      - ./knowledge-base:/knowledge-base:ro
       - api_storage:/app/storage_data
 
   web:
