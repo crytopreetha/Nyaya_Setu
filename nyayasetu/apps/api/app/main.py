@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.db import Base, engine, SessionLocal
-from app.routes import auth, cases, files, sources, referrals, drafts, transcribe
+from app.routes import auth, cases, files, sources, referrals, drafts, transcribe, lawyers
 from app.services.kb_loader import load_knowledge_base
 
 logging.basicConfig(level=logging.INFO)
@@ -62,3 +62,4 @@ app.include_router(sources.router)
 app.include_router(referrals.router)
 app.include_router(drafts.router)
 app.include_router(transcribe.router)
+app.include_router(lawyers.router)

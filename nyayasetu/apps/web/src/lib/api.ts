@@ -10,6 +10,10 @@ import type {
   UserOut,
   TranscriptionOut,
   CaseFileOut,
+  LawyerProfileOut,
+  LawyerProfileCreate,
+  CaseListingOut,
+  AssignedLawyerOut,
 } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -193,6 +197,26 @@ export const api = {
 
   listDrafts: (caseId: string) =>
     request<DraftOut[]>(`/api/cases/${caseId}/drafts`),
+
+  // --- Lawyer marketplace ---
+  shareCaseWithLawyers: (caseId: string, share: boolean) =>
+    request(`/api/cases/${caseId}/share-with-lawyers?share=${share}`, { method: "POST" }),
+
+  getAssignedLawyer: (caseId: string) =>
+    request<AssignedLawyerOut | null>(`/api/cases/${caseId}/lawyer`),
+
+  registerLawyer: (payload: LawyerProfileCreate) =>
+    request<LawyerProfileOut>("/api/lawyers/me", { method: "POST", body: JSON.stringify(payload) }),
+
+  getMyLawyerProfile: () => request<LawyerProfileOut>("/api/lawyers/me"),
+
+  browseOpenCases: () => request<CaseListingOut[]>("/api/lawyers/cases"),
+
+  claimCase: (caseId: string) =>
+    request<CaseListingOut>(`/api/lawyers/cases/${caseId}/claim`, { method: "POST" }),
+
+  getClaimedCaseDetail: (caseId: string) =>
+    request<any>(`/api/lawyers/cases/${caseId}/full`),
 };
 
 export { ApiError };

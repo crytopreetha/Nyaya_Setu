@@ -6,6 +6,8 @@ import NewCase from "./pages/NewCase";
 import Processing from "./pages/Processing";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
+import BecomeLawyer from "./pages/BecomeLawyer";
+import LawyerDashboard from "./pages/LawyerDashboard";
 import RequireAuth from "./components/RequireAuth";
 
 export default function App() {
@@ -43,6 +45,22 @@ export default function App() {
         element={
           <RequireAuth>
             <History />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/become-lawyer"
+        element={
+          <RequireAuth>
+            <BecomeLawyer />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lawyer"
+        element={
+          <RequireAuth>
+            <LawyerDashboard />
           </RequireAuth>
         }
       />

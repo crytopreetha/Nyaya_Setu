@@ -159,10 +159,64 @@ class UserOut(BaseModel):
     id: str
     email: str
     preferred_language: str
+    role: str
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class LawyerProfileCreate(BaseModel):
+    full_name: str
+    bar_registration_number: str
+    practice_domains: list[Domain]
+    city: Optional[str] = None
+    state: Optional[str] = None
+    languages: list[str] = Field(default_factory=lambda: ["en"])
+    bio: Optional[str] = None
+    phone: Optional[str] = None
+
+
+class LawyerProfileOut(BaseModel):
+    id: str
+    full_name: str
+    bar_registration_number: str
+    practice_domains: list[str]
+    city: Optional[str]
+    state: Optional[str]
+    languages: list[str]
+    bio: Optional[str]
+    phone: Optional[str]
+    verified: bool
+
+    class Config:
+        from_attributes = True
+
+
+class LawyerPublicOut(BaseModel):
+    """What a citizen sees about the lawyer who claimed their case — no bar
+    number/phone until the lawyer chooses to share it directly."""
+    id: str
+    full_name: str
+    city: Optional[str]
+    state: Optional[str]
+    languages: list[str]
+    bio: Optional[str]
+    verified: bool
+
+    class Config:
+        from_attributes = True
+
+
+class CaseListingOut(BaseModel):
+    """Redacted case summary shown to lawyers browsing open cases — never
+    includes facts, evidence files, or contact details before a claim."""
+    id: str
+    domain: str
+    title: str
+    summary: Optional[str] = None
+    highest_severity: Optional[str] = None
+    created_at: datetime
 
 
 class TokenOut(BaseModel):

@@ -115,6 +115,7 @@ export interface UserOut {
   id: string;
   email: string;
   preferred_language: string;
+  role: "citizen" | "lawyer";
   created_at: string;
 }
 
@@ -165,4 +166,49 @@ export interface CaseFileOut {
   mime_type: string;
   size: number;
   created_at: string;
+}
+
+export interface LawyerProfileOut {
+  id: string;
+  full_name: string;
+  bar_registration_number: string;
+  practice_domains: Domain[];
+  city?: string | null;
+  state?: string | null;
+  languages: string[];
+  bio?: string | null;
+  phone?: string | null;
+  verified: boolean;
+}
+
+export interface LawyerProfileCreate {
+  full_name: string;
+  bar_registration_number: string;
+  practice_domains: Domain[];
+  city?: string;
+  state?: string;
+  languages: string[];
+  bio?: string;
+  phone?: string;
+}
+
+export interface CaseListingOut {
+  id: string;
+  domain: Domain;
+  title: string;
+  summary?: string | null;
+  highest_severity?: Severity | null;
+  created_at: string;
+}
+
+export interface AssignedLawyerOut {
+  id: string;
+  full_name: string;
+  city?: string | null;
+  state?: string | null;
+  languages: string[];
+  bio?: string | null;
+  phone?: string | null;
+  verified: boolean;
+  claimed_at: string;
 }

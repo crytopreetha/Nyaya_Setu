@@ -21,6 +21,7 @@ harden before a real deployment:
 | Embeddings | Local, offline via `fastembed` (BAAI/bge-small-en) — no API key needed | Swap to OpenAI embeddings in `services/embeddings.py` if you prefer |
 | Language model | Calls an OpenAI-compatible API if `OPENAI_API_KEY` is set; otherwise falls back to a deterministic `MockLLM` so the whole flow still works offline | Set `OPENAI_API_KEY` / `OPENAI_API_BASE` in `.env` |
 | Bhashini translation | Not called automatically; UI has an English/Hindi label toggle only | Call Bhashini/IndicTrans2 from the frontend or a `/api/translate` route |
+| Lawyer verification | Bar registration numbers are **self-declared at signup, not verified**. The `verified` flag exists in the data model for exactly this reason but nothing sets it yet. | Integrate a Bar Council of India lookup (or manual admin review) before a lawyer profile can claim cases |
 
 Nothing here silently fabricates a legal conclusion: the risk engine combines
 deterministic rule checks with model output, every AI claim needs a
@@ -38,6 +39,16 @@ real structured-fact extraction (people, organization, location, amount,
 channel, harm, desired outcome, immediate danger — Section 7.3), a banner
 when OCR flagged a page as hard to read, and a "Download PDF" button on
 generated drafts.
+
+**Lawyer marketplace.** NyayaSetu deliberately does not let the AI issue
+legal advice or tell a user whether to pursue a case — that would be
+unauthorized practice of law and a real liability/accuracy risk. Instead, a
+citizen can opt in (per case, off by default) to share a redacted case
+summary with lawyers registered on the platform in that practice area. A
+lawyer sees only a title/domain/severity in the browse list; claiming a case
+reveals full facts and risk items, and the citizen then sees the lawyer's
+profile and contact details. See the "Lawyer verification" row above —
+self-declared bar numbers are not yet checked against any real registry.
 
 ## Quick start
 

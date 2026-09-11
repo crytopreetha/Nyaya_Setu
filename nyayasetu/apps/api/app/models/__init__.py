@@ -1,5 +1,6 @@
 from app.models.models import (
     User,
+    LawyerProfile,
     Case,
     CaseFile,
     Extraction,
@@ -16,6 +17,7 @@ from app.models.models import (
 
 __all__ = [
     "User",
+    "LawyerProfile",
     "Case",
     "CaseFile",
     "Extraction",

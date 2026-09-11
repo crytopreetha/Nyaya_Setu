@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { Scale, FolderClock, FilePlus2, LogOut, LogIn, UserPlus } from "lucide-react";
+import { Scale, FolderClock, FilePlus2, LogOut, LogIn, UserPlus, Briefcase } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useLanguage } from "../lib/i18n";
 
@@ -34,6 +34,23 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <FolderClock className="h-4 w-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{t("nav.myCases")}</span>
                 </Link>
+                {user.role === "lawyer" ? (
+                  <Link
+                    to="/lawyer"
+                    className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px]"
+                  >
+                    <Briefcase className="h-4 w-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Lawyer dashboard</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/become-lawyer"
+                    className="flex items-center gap-1.5 rounded-md px-3 py-2 text-ink/80 hover:bg-sage/60 min-h-[44px]"
+                  >
+                    <Briefcase className="h-4 w-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">For lawyers</span>
+                  </Link>
+                )}
                 <Link
                   to="/new"
                   className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-white hover:bg-brand-dark min-h-[44px]"

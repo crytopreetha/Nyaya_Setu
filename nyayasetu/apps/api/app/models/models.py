@@ -32,10 +32,37 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
     preferred_language = Column(String, default="en")
+    role = Column(String, default="citizen")  # citizen | lawyer
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     cases = relationship("Case", back_populates="user")
+    lawyer_profile = relationship(
+        "LawyerProfile", back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+
+
+class LawyerProfile(Base):
+    __tablename__ = "lawyer_profiles"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), unique=True, nullable=False)
+    full_name = Column(String, nullable=False)
+    bar_registration_number = Column(String, nullable=False)
+    practice_domains = Column(JSON, nullable=False, default=list)  # ["rental_tenancy", ...]
+    city = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+    languages = Column(JSON, nullable=True, default=list)  # ["en", "hi", "mr"]
+    bio = Column(Text, nullable=True)
+    phone = Column(String, nullable=True)
+    # Self-declared at signup. A real deployment must verify this against the
+    # Bar Council of India register before a profile can claim cases — see
+    # README's simplification table. Stored now so that verification workflow
+    # has somewhere to write its result later.
+    verified = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="lawyer_profile")
 
 
 class Case(Base):
@@ -51,6 +78,10 @@ class Case(Base):
     # created -> extracting -> analyzing -> ready -> failed -> deleted
     consent_at = Column(DateTime, nullable=True)
     error_message = Column(Text, nullable=True)
+    # Citizen opts in explicitly — a case is never visible to lawyers by default.
+    shared_for_lawyer_review = Column(Boolean, default=False)
+    claimed_by_lawyer_id = Column(UUID(as_uuid=False), ForeignKey("lawyer_profiles.id"), nullable=True)
+    claimed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

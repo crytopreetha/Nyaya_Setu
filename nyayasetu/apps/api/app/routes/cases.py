@@ -202,3 +202,45 @@ def delete_case(case_id: str, db: Session = Depends(get_db), current_user: User 
     case.status = "deleted"
     db.commit()
     return None
+
+
+@router.post("/{case_id}/share-with-lawyers")
+def set_lawyer_sharing(
+    case_id: str,
+    share: bool,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Opt in (or out) of having this case visible to lawyers on the
+    platform who practice in this domain. Off by default — nothing is ever
+    shared without this explicit action."""
+    case = _get_owned_case(db, case_id, current_user)
+    if case.status != "ready":
+        raise HTTPException(status_code=409, detail="Case analysis must be ready before sharing with lawyers.")
+    case.shared_for_lawyer_review = share
+    db.commit()
+    return {"id": case.id, "shared_for_lawyer_review": case.shared_for_lawyer_review}
+
+
+@router.get("/{case_id}/lawyer")
+def get_assigned_lawyer(case_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Returns the lawyer who has claimed this case, if any."""
+    from app.models import LawyerProfile
+
+    case = _get_owned_case(db, case_id, current_user)
+    if not case.claimed_by_lawyer_id:
+        return None
+    lawyer = db.get(LawyerProfile, case.claimed_by_lawyer_id)
+    if not lawyer:
+        return None
+    return {
+        "id": lawyer.id,
+        "full_name": lawyer.full_name,
+        "city": lawyer.city,
+        "state": lawyer.state,
+        "languages": lawyer.languages,
+        "bio": lawyer.bio,
+        "phone": lawyer.phone,
+        "verified": lawyer.verified,
+        "claimed_at": case.claimed_at,
+    }

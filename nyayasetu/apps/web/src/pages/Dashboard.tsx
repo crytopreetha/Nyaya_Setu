@@ -12,6 +12,8 @@ import {
   Copy,
   Loader2,
   Inbox,
+  Scale,
+  Phone,
 } from "lucide-react";
 import Shell from "../components/Shell";
 import SeverityBadge from "../components/SeverityBadge";
@@ -19,7 +21,7 @@ import { api, ApiError } from "../lib/api";
 import { useToast } from "../lib/toast";
 import { useLanguage } from "../lib/i18n";
 import type { TranslationKey } from "../lib/i18n";
-import type { AnalysisOut, ReferralOut, DraftOut, CaseFileOut } from "../types";
+import type { AnalysisOut, ReferralOut, DraftOut, CaseFileOut, AssignedLawyerOut } from "../types";
 import { FACT_TYPE_LABELS } from "../types";
 
 type Tab = "overview" | "facts" | "dates" | "action" | "evidence" | "draft";
@@ -41,6 +43,9 @@ export default function Dashboard() {
   const [referrals, setReferrals] = useState<ReferralOut[]>([]);
   const [drafts, setDrafts] = useState<DraftOut[]>([]);
   const [files, setFiles] = useState<CaseFileOut[]>([]);
+  const [sharedWithLawyers, setSharedWithLawyers] = useState(false);
+  const [assignedLawyer, setAssignedLawyer] = useState<AssignedLawyerOut | null>(null);
+  const [sharingBusy, setSharingBusy] = useState(false);
   const [tab, setTab] = useState<Tab>("overview");
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [generatingDraft, setGeneratingDraft] = useState(false);
@@ -57,6 +62,31 @@ export default function Dashboard() {
       setFiles(await api.listFiles(caseId));
     } catch {
       /* evidence list is a nice-to-have; ignore failures */
+    }
+  }
+
+  async function loadLawyerStatus() {
+    if (!caseId) return;
+    try {
+      const lawyer = await api.getAssignedLawyer(caseId);
+      setAssignedLawyer(lawyer);
+    } catch {
+      /* not shared / no lawyer yet — fine */
+    }
+  }
+
+  async function toggleShareWithLawyers() {
+    if (!caseId) return;
+    setSharingBusy(true);
+    try {
+      const next = !sharedWithLawyers;
+      await api.shareCaseWithLawyers(caseId, next);
+      setSharedWithLawyers(next);
+      showToast(next ? "Case shared with lawyers in this domain." : "Case is no longer shared with lawyers.");
+    } catch (e) {
+      showToast(e instanceof ApiError ? e.message : "Could not update sharing.", "error");
+    } finally {
+      setSharingBusy(false);
     }
   }
 
@@ -77,6 +107,7 @@ export default function Dashboard() {
           /* no drafts yet */
         }
         await loadFiles();
+        await loadLawyerStatus();
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Could not load this case."));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -283,6 +314,58 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            <div>
+              <h2 className="font-serif text-xl font-semibold text-ink flex items-center gap-2">
+                <Scale className="h-5 w-5 text-brand" aria-hidden="true" />
+                Talk to a lawyer
+              </h2>
+              {assignedLawyer ? (
+                <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-5">
+                  <p className="font-medium text-ink">
+                    {assignedLawyer.full_name}
+                    {assignedLawyer.verified ? (
+                      <span className="ml-2 text-xs text-brand">Verified</span>
+                    ) : (
+                      <span className="ml-2 text-xs text-ink/40">Verification pending</span>
+                    )}
+                  </p>
+                  {(assignedLawyer.city || assignedLawyer.state) && (
+                    <p className="text-sm text-ink/60">
+                      {[assignedLawyer.city, assignedLawyer.state].filter(Boolean).join(", ")}
+                    </p>
+                  )}
+                  {assignedLawyer.bio && <p className="mt-2 text-sm text-ink/70">{assignedLawyer.bio}</p>}
+                  {assignedLawyer.phone && (
+                    <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-brand">
+                      <Phone className="h-4 w-4" aria-hidden="true" />
+                      {assignedLawyer.phone}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-lg border border-sage bg-white p-5">
+                  <p className="text-sm text-ink/70">
+                    NyayaSetu gives information, not legal advice. If you want a
+                    real recommendation, you can share a redacted summary of
+                    this case with lawyers practicing in this domain — nothing
+                    is shared until you turn this on, and full details are
+                    only visible to whichever lawyer claims it.
+                  </p>
+                  <button
+                    onClick={toggleShareWithLawyers}
+                    disabled={sharingBusy}
+                    className="mt-3 min-h-[44px] rounded-md bg-brand px-5 text-white font-medium hover:bg-brand-dark disabled:opacity-50"
+                  >
+                    {sharingBusy
+                      ? "Updating…"
+                      : sharedWithLawyers
+                      ? "Stop sharing with lawyers"
+                      : "Share this case with lawyers"}
+                  </button>
+                </div>
+              )}
+            </div>
 
             {analysis.disclaimer && (
               <p className="text-sm text-ink/50 border-t border-sage pt-4">{analysis.disclaimer}</p>
